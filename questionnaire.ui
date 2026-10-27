@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QuestionnaireWidget</class>
+ <widget class="QWidget" name="QuestionnaireWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>640</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Первичная анкета</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_title">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Расскажите о своих предпочтениях</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>498</width>
+        <height>520</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="layout_questions">
+       <item>
+        <widget class="QGroupBox" name="group_genre">
+         <property name="title">
+          <string>Какой жанр ближе?</string>
+         </property>
+         <layout class="QVBoxLayout" name="layout_genre">
+          <item>
+           <widget class="QRadioButton" name="genre_fantasy">
+            <property name="text">
+             <string>Фэнтези</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="genre_detective">
+            <property name="text">
+             <string>Детектив и триллер</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="genre_romance">
+            <property name="text">
+             <string>Романтика</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="genre_history">
+            <property name="text">
+             <string>Историческая проза</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="genre_nonfiction">
+            <property name="text">
+             <string>Нон-фикшн</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="genre_any">
+            <property name="text">
+             <string>Без разницы</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_audience">
+         <property name="title">
+          <string>Для какой аудитории?</string>
+         </property>
+         <layout class="QVBoxLayout" name="layout_audience">
+          <item>
+           <widget class="QRadioButton" name="audience_kids">
+            <property name="text">
+             <string>Для детей и подростков</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="audience_adults">
+            <property name="text">
+             <string>Для взрослых</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="audience_any">
+            <property name="text">
+             <string>Без разницы</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_rating">
+         <property name="title">
+          <string>Важна высокая оценка читателей?</string>
+         </property>
+         <layout class="QVBoxLayout" name="layout_rating">
+          <item>
+           <widget class="QRadioButton" name="rating_high">
+            <property name="text">
+             <string>Да, только хорошо оценённые</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rating_any">
+            <property name="text">
+             <string>Не особенно</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_volume">
+         <property name="title">
+          <string>Какой объём книги?</string>
+         </property>
+         <layout class="QVBoxLayout" name="layout_volume">
+          <item>
+           <widget class="QRadioButton" name="volume_short">
+            <property name="text">
+             <string>До 250 стр.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="volume_medium">
+            <property name="text">
+             <string>250–400 стр.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="volume_long">
+            <property name="text">
+             <string>Больше 400 стр.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="volume_any">
+            <property name="text">
+             <string>Без разницы</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_era">
+         <property name="title">
+          <string>Какой год выхода книги ближе?</string>
+         </property>
+         <layout class="QVBoxLayout" name="layout_era">
+          <item>
+           <widget class="QRadioButton" name="era_classic">
+            <property name="text">
+             <string>Классика (до 1950)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="era_1950_2000">
+            <property name="text">
+             <string>1950–2000</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="era_after_2000">
+            <property name="text">
+             <string>После 2000</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="era_any">
+            <property name="text">
+             <string>Без разницы</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_questions">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_message">
+     <property name="styleSheet">
+      <string notr="true">color: red;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="layout_buttons">
+     <item>
+      <spacer name="horizontalSpacer_buttons">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_skip">
+       <property name="text">
+        <string>Пропустить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_done">
+       <property name="text">
+        <string>Готово</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
