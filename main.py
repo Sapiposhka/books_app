@@ -10,8 +10,9 @@ def main() -> None:
     db = Database()
     window = Login(db)
     window.show()
+    app_exit = app.exec()
     db.close()
-    sys.exit(app.exec())
+    sys.exit(app_exit)
 
 def custom_excepthook(exc_type, exc_value, exc_tb):
     error_message = f"Необработанное исключение: {exc_type.__name__}: {exc_value}"
