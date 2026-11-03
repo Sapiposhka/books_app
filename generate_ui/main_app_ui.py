@@ -12,15 +12,156 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(918, 630)
+        MainWindow.setStyleSheet("\n"
+"    QMainWindow { background-color: #f7f9fc; }\n"
+"    QLabel { color: #2c3e50; font-family: Arial, sans-serif; }\n"
+"    QPushButton { font-family: Arial, sans-serif; }\n"
+"   ")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(320, 260, 131, 21))
-        self.label.setObjectName("label")
+        self.main_layout = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+        self.main_layout.setObjectName("main_layout")
+        self.sidebar_frame = QtWidgets.QFrame(parent=self.centralwidget)
+        self.sidebar_frame.setMaximumSize(QtCore.QSize(230, 16777215))
+        self.sidebar_frame.setStyleSheet("\n"
+"        QFrame { background-color: #2c3e50; border: none; }\n"
+"        QPushButton {\n"
+"         background-color: transparent;\n"
+"         color: #ecf0f1;\n"
+"         text-align: left;\n"
+"         padding: 12px 20px;\n"
+"         font-size: 11pt;\n"
+"         border: none;\n"
+"         border-radius: 6px;\n"
+"         margin: 2px 10px;\n"
+"        }\n"
+"        QPushButton:hover { background-color: #34495e; }\n"
+"        QPushButton:pressed { background-color: #1abc9c; }\n"
+"       ")
+        self.sidebar_frame.setObjectName("sidebar_frame")
+        self.sidebar_layout = QtWidgets.QVBoxLayout(self.sidebar_frame)
+        self.sidebar_layout.setContentsMargins(-1, 20, -1, 20)
+        self.sidebar_layout.setSpacing(5)
+        self.sidebar_layout.setObjectName("sidebar_layout")
+        self.lbl_logo = QtWidgets.QLabel(parent=self.sidebar_frame)
+        self.lbl_logo.setStyleSheet("color: #ffffff; font-size: 13pt; font-weight: bold; margin-left: 20px; margin-bottom: 20px;")
+        self.lbl_logo.setObjectName("lbl_logo")
+        self.sidebar_layout.addWidget(self.lbl_logo)
+        self.btn_feed = QtWidgets.QPushButton(parent=self.sidebar_frame)
+        self.btn_feed.setObjectName("btn_feed")
+        self.sidebar_layout.addWidget(self.btn_feed)
+        self.btn_favs = QtWidgets.QPushButton(parent=self.sidebar_frame)
+        self.btn_favs.setObjectName("btn_favs")
+        self.sidebar_layout.addWidget(self.btn_favs)
+        self.btn_mood = QtWidgets.QPushButton(parent=self.sidebar_frame)
+        self.btn_mood.setObjectName("btn_mood")
+        self.sidebar_layout.addWidget(self.btn_mood)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.sidebar_layout.addItem(spacerItem)
+        self.btn_logout = QtWidgets.QPushButton(parent=self.sidebar_frame)
+        self.btn_logout.setObjectName("btn_logout")
+        self.sidebar_layout.addWidget(self.btn_logout)
+        self.main_layout.addWidget(self.sidebar_frame)
+        self.stackedWidget = QtWidgets.QStackedWidget(parent=self.centralwidget)
+        self.stackedWidget.setStyleSheet("background-color: #f7f9fc;")
+        self.stackedWidget.setObjectName("stackedWidget")
+        self.page_feed = QtWidgets.QWidget()
+        self.page_feed.setObjectName("page_feed")
+        self.feed_layout = QtWidgets.QVBoxLayout(self.page_feed)
+        self.feed_layout.setContentsMargins(40, 30, 40, 30)
+        self.feed_layout.setObjectName("feed_layout")
+        self.card_frame = QtWidgets.QFrame(parent=self.page_feed)
+        self.card_frame.setStyleSheet("\n"
+"            QFrame {\n"
+"             background-color: #ffffff;\n"
+"             border: 1px solid #e1e8ed;\n"
+"             border-radius: 16px;\n"
+"             padding: 24px;\n"
+"            }\n"
+"           ")
+        self.card_frame.setObjectName("card_frame")
+        self.card_layout = QtWidgets.QVBoxLayout(self.card_frame)
+        self.card_layout.setObjectName("card_layout")
+        self.lbl_cover = QtWidgets.QLabel(parent=self.card_frame)
+        self.lbl_cover.setMaximumSize(QtCore.QSize(16777215, 180))
+        self.lbl_cover.setStyleSheet("background-color: #edf2f7; border-radius: 12px; font-size: 14pt; color: #718096;")
+        self.lbl_cover.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.lbl_cover.setObjectName("lbl_cover")
+        self.card_layout.addWidget(self.lbl_cover)
+        self.lbl_title = QtWidgets.QLabel(parent=self.card_frame)
+        self.lbl_title.setStyleSheet("font-size: 18pt; font-weight: bold; color: #1a202c; margin-top: 10px;")
+        self.lbl_title.setWordWrap(True)
+        self.lbl_title.setObjectName("lbl_title")
+        self.card_layout.addWidget(self.lbl_title)
+        self.lbl_author = QtWidgets.QLabel(parent=self.card_frame)
+        self.lbl_author.setStyleSheet("font-size: 13pt; color: #4a5568;")
+        self.lbl_author.setObjectName("lbl_author")
+        self.card_layout.addWidget(self.lbl_author)
+        self.lbl_rating = QtWidgets.QLabel(parent=self.card_frame)
+        self.lbl_rating.setStyleSheet("font-size: 11pt; color: #d69e2e; font-weight: bold;")
+        self.lbl_rating.setObjectName("lbl_rating")
+        self.card_layout.addWidget(self.lbl_rating)
+        self.lbl_desc = QtWidgets.QLabel(parent=self.card_frame)
+        self.lbl_desc.setStyleSheet("font-size: 11pt; color: #4a5568;")
+        self.lbl_desc.setWordWrap(True)
+        self.lbl_desc.setObjectName("lbl_desc")
+        self.card_layout.addWidget(self.lbl_desc)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.card_layout.addItem(spacerItem1)
+        self.feed_layout.addWidget(self.card_frame)
+        self.actions_layout = QtWidgets.QHBoxLayout()
+        self.actions_layout.setSpacing(20)
+        self.actions_layout.setObjectName("actions_layout")
+        self.btn_skip = QtWidgets.QPushButton(parent=self.page_feed)
+        self.btn_skip.setStyleSheet("\n"
+"              QPushButton {\n"
+"               background-color: #fff5f5; \n"
+"               color: #e53e3e; \n"
+"               font-size: 12pt; \n"
+"               font-weight: bold; \n"
+"               border-radius: 10px; \n"
+"               padding: 14px;\n"
+"               border: 1px solid #fed7d7;\n"
+"              }\n"
+"              QPushButton:hover { background-color: #ffe3e3; }\n"
+"             ")
+        self.btn_skip.setObjectName("btn_skip")
+        self.actions_layout.addWidget(self.btn_skip)
+        self.btn_like = QtWidgets.QPushButton(parent=self.page_feed)
+        self.btn_like.setStyleSheet("\n"
+"              QPushButton {\n"
+"               background-color: #f0fff4; \n"
+"               color: #38a169; \n"
+"               font-size: 12pt; \n"
+"               font-weight: bold; \n"
+"               border-radius: 10px; \n"
+"               padding: 14px;\n"
+"               border: 1px solid #c6f6d5;\n"
+"              }\n"
+"              QPushButton:hover { background-color: #e6fffa; }\n"
+"             ")
+        self.btn_like.setObjectName("btn_like")
+        self.actions_layout.addWidget(self.btn_like)
+        self.feed_layout.addLayout(self.actions_layout)
+        self.stackedWidget.addWidget(self.page_feed)
+        self.page_favorites = QtWidgets.QWidget()
+        self.page_favorites.setObjectName("page_favorites")
+        self.fav_layout = QtWidgets.QVBoxLayout(self.page_favorites)
+        self.fav_layout.setObjectName("fav_layout")
+        self.lbl_fav_placeholder = QtWidgets.QLabel(parent=self.page_favorites)
+        self.lbl_fav_placeholder.setStyleSheet("font-size: 16pt; color: #4a5568;")
+        self.lbl_fav_placeholder.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.lbl_fav_placeholder.setObjectName("lbl_fav_placeholder")
+        self.fav_layout.addWidget(self.lbl_fav_placeholder)
+        self.stackedWidget.addWidget(self.page_favorites)
+        self.main_layout.addWidget(self.stackedWidget)
+        self.main_layout.setStretch(1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 918, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
@@ -28,9 +169,22 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Основное приложение"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Книжный рекомендатель"))
+        self.lbl_logo.setText(_translate("MainWindow", "📖 Книжный\\nрекомендатель"))
+        self.btn_feed.setText(_translate("MainWindow", "🗃️ Подбор (Свайп)"))
+        self.btn_favs.setText(_translate("MainWindow", "💕 Избранное"))
+        self.btn_mood.setText(_translate("MainWindow", "🔄 Сменить настроение"))
+        self.btn_logout.setText(_translate("MainWindow", "🚪 Выход"))
+        self.lbl_cover.setText(_translate("MainWindow", "📚 Обложка книги"))
+        self.lbl_title.setText(_translate("MainWindow", "Название книги"))
+        self.lbl_author.setText(_translate("MainWindow", "Автор"))
+        self.lbl_rating.setText(_translate("MainWindow", "⭐ Рейтинг: 0.0"))
+        self.lbl_desc.setText(_translate("MainWindow", "Краткое описание книги..."))
+        self.btn_skip.setText(_translate("MainWindow", "❌ Пропустить"))
+        self.btn_like.setText(_translate("MainWindow", "❤️ Нравится"))
+        self.lbl_fav_placeholder.setText(_translate("MainWindow", "Раздел «Избранное»\\nЗдесь будут храниться ваши лайкнутые книги"))

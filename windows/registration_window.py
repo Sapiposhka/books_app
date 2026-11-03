@@ -3,7 +3,6 @@ from generate_ui.registration_ui import Ui_MainWindow
 from db.database import Database
 
 
-
 class Registration(QMainWindow, Ui_MainWindow):
     def __init__(self, db: Database):
         super().__init__()

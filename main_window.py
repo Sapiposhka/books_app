@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QLineEdit
 from generate_ui.login_ui import Ui_MainWindow
 from db.database import Database
-from windows.main_app_window import MainApp
+from windows.questionnaire_window import Questionnaire
 from windows.registration_window import Registration
 
 
@@ -30,8 +30,8 @@ class Login(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, 'Ошибка', 'Неверный email или пароль')
             return
         
-        self.main_app = MainApp(self.db, user_id)
-        self.main_app.show()
+        self.questionnaire = Questionnaire(self.db, user_id)
+        self.questionnaire.show()
         self.close()
 
     def _open_registration(self):

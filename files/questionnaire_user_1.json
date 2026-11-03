@@ -1,0 +1,10 @@
+{
+    "user_id": 1,
+    "answers": {
+        "genre": "detective",
+        "audience": "adults",
+        "rating": "any",
+        "volume": "medium",
+        "era": "after_2000"
+    }
+}
