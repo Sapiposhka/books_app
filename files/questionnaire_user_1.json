@@ -1,9 +1,9 @@
 {
     "user_id": 1,
     "answers": {
-        "genre": "detective",
+        "genre": "romance",
         "audience": "adults",
-        "rating": "any",
+        "rating": "high",
         "volume": "medium",
         "era": "after_2000"
     }

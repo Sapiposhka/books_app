@@ -1,3 +1,4 @@
+import faulthandler
 import sys
 from PyQt6.QtWidgets import QApplication
 import build_ui
@@ -6,6 +7,7 @@ from main_window import Login
 
 
 def main() -> None:
+    faulthandler.enable()  # при аварийном вылете Qt выведет в консоль, где именно упало
     app = QApplication(sys.argv)
     db = Database()
     window = Login(db)
