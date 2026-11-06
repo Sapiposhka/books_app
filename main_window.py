@@ -1,6 +1,11 @@
+import json
+from pathlib import Path
+
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QLineEdit
-from generate_ui.login_ui import Ui_MainWindow
+
 from db.database import Database
+from generate_ui.login_ui import Ui_MainWindow
+from windows.mood_questionnaire_window import MoodQuestionnaire
 from windows.questionnaire_window import Questionnaire
 from windows.registration_window import Registration
 
@@ -26,16 +31,54 @@ class Login(QMainWindow, Ui_MainWindow):
             return
 
         user_id = self.db.authenticate(email, password)
+
         if user_id is None:
             QMessageBox.warning(self, 'Ошибка', 'Неверный email или пароль')
             return
-        
-        self.questionnaire = Questionnaire(self.db, user_id)
-        self.questionnaire.show()
+
+        path = Path(__file__).resolve().parent.joinpath(
+            'files',
+            f'questionnaire_user_{user_id}.json',
+        )
+
+        try:
+            if path.exists():
+                data = json.loads(path.read_text(encoding='utf-8'))
+            else:
+                data = {}
+
+            initial_shown = data.get(
+                'initial_shown',
+                bool(data.get('answers')),
+            )
+
+            data.update({
+                'user_id': user_id,
+                'initial_shown': True,
+            })
+
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(data, ensure_ascii=False, indent=4),
+                encoding='utf-8',
+            )
+        except (OSError, json.JSONDecodeError) as error:
+            QMessageBox.critical(
+                self,
+                'Ошибка',
+                f'Не удалось сохранить данные анкеты: {error}',
+            )
+            return
+
+        if initial_shown:
+            self.next_window = MoodQuestionnaire(self.db, user_id)
+        else:
+            self.next_window = Questionnaire(self.db, user_id)
+
+        self.next_window.show()
         self.close()
 
     def _open_registration(self):
         self.registration = Registration(self.db)
         self.registration.show()
         self.close()
-
