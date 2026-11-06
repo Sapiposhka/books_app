@@ -203,8 +203,10 @@ def import_csv(csv_path: Path, limit: int | None, clear: bool) -> None:
 
         # не добавляем уже существующие книги (повторный запуск не создаст дубликаты)
         known = {
-            (title.lower(), author.lower())
-            for title, author in connection.execute('SELECT title, author FROM Books')
+            (title.lower(), author.lower()): (book_id, cover_url)
+            for book_id, title, author, cover_url in connection.execute(
+                'SELECT id, title, author, cover_url FROM Books'
+            )
         }
         batch, added, skipped = [], 0, 0
         insert = (
@@ -215,10 +217,27 @@ def import_csv(csv_path: Path, limit: int | None, clear: bool) -> None:
             if limit and number > limit:
                 break
             book = row_to_book(row, columns)
-            if book is None or (book[0].lower(), book[1].lower()) in known:
+            if book is None:
                 skipped += 1
                 continue
-            known.add((book[0].lower(), book[1].lower()))
+
+            key = (book[0].lower(), book[1].lower())
+
+            if key in known:
+                book_id, old_cover_url = known[key]
+                new_cover_url = book[7]
+
+                if book_id is not None and not old_cover_url and new_cover_url:
+                    connection.execute(
+                        'UPDATE Books SET cover_url = ? WHERE id = ?',
+                        (new_cover_url, book_id),
+                    )
+                    known[key] = (book_id, new_cover_url)
+
+                skipped += 1
+                continue
+
+            known[key] = (None, book[7])
             batch.append(book)
             if len(batch) >= 5000:
                 connection.executemany(insert, batch)
