@@ -1,11 +1,14 @@
 import json
+import ssl
 import threading
 import urllib.request
 from pathlib import Path
 
+import certifi
 from PyQt6.QtCore import QEvent, Qt, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QPixmap, QShortcut
 from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QMainWindow, QPushButton
+
 from db.database import Database
 from generate_ui.main_app_ui import Ui_MainWindow
 from recommender import recommend, validate_answers
@@ -25,6 +28,9 @@ class MainApp(QMainWindow, Ui_MainWindow):
     def __init__(self, db: Database, user_id: int):
         super().__init__()
         self.setupUi(self)
+        self._cover_pixmap = QPixmap()
+        self.lbl_cover.setFixedHeight(320)
+        self.lbl_cover.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.db = db
         self.user_id = user_id
 
@@ -50,6 +56,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.btn_favs.clicked.connect(self._open_favorites)
         self.btn_mood.clicked.connect(self._open_mood_questionnaire)
         self.btn_logout.clicked.connect(self._logout)
+        self.btn_preferences.clicked.connect(self._edit_preferences)
         # свайп мышью по карточке + стрелки на клавиатуре
         self.card_frame.installEventFilter(self)
         QShortcut(QKeySequence(Qt.Key.Key_Right), self, activated=self._like_by_key)
@@ -57,7 +64,13 @@ class MainApp(QMainWindow, Ui_MainWindow):
 
     def _setup_favorites_page(self) -> None:
         self.fav_list = QListWidget()
+        self.fav_list.setStyleSheet(
+            'QListWidget { background-color: #ffffff; color: #2c3e50; }'
+            'QListWidget::item { padding: 8px; }'
+            'QListWidget::item:selected { background-color: #dbeafe; color: #1a202c; }'
+        )
         self.btn_unlike = QPushButton('Убрать из избранного')
+        self.btn_unlike.setStyleSheet('QPushButton { color: #000000; }')
         self.btn_unlike.clicked.connect(self._unlike_selected)
         self.fav_layout.addWidget(self.fav_list)
         self.fav_layout.addWidget(self.btn_unlike)
@@ -138,38 +151,72 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self._load_cover(book)
 
     def _load_cover(self, book: dict) -> None:
+        self._cover_pixmap = QPixmap()
         self.lbl_cover.setPixmap(QPixmap())
         self.lbl_cover.setText('📚 Обложка книги')
+
         url = str(book['cover_url'] or '')
         if not LOAD_COVERS or not url.startswith(('http://', 'https://')):
             return
-        # скачиваем в отдельном потоке обычным urllib, чтобы не блокировать окно
+
         threading.Thread(
-            target=self._download_cover, args=(book['id'], url), daemon=True
+            target=self._download_cover,
+            args=(book['id'], url),
+            daemon=True,
         ).start()
 
     def _download_cover(self, book_id: int, url: str) -> None:
-        """Работает в фоновом потоке: нельзя трогать виджеты, только отправить сигнал."""
         try:
-            request = urllib.request.Request(url, headers={'User-Agent': 'books_app/1.0'})
-            with urllib.request.urlopen(request, timeout=8) as response:
+            request = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'Mozilla/5.0'},
+            )
+            context = ssl.create_default_context(cafile=certifi.where())
+
+            with urllib.request.urlopen(
+                    request,
+                    timeout=15,
+                    context=context,
+            ) as response:
                 data = response.read(2_000_000)
-        except Exception:
-            return  # нет обложки или нет сети - остаётся заглушка
-        try:
+
             self.cover_loaded.emit(book_id, data)
-        except RuntimeError:
-            pass  # окно уже закрыто
+
+        except Exception as error:
+            print(f'Не удалось загрузить обложку {url}: {error}')
 
     def _on_cover_loaded(self, book_id: int, data: bytes) -> None:
-        # пользователь мог уже перелистнуть на другую книгу
         if self.current_book is None or self.current_book['id'] != book_id:
             return
+
         pixmap = QPixmap()
-        if pixmap.loadFromData(data):
-            self.lbl_cover.setPixmap(
-                pixmap.scaledToHeight(self.lbl_cover.maximumHeight(), Qt.TransformationMode.SmoothTransformation)
-            )
+        if not pixmap.loadFromData(data):
+            print(f'Картинка книги {book_id} не распозналась как изображение')
+            return
+
+        self._cover_pixmap = pixmap
+        print(
+            'Исходный размер обложки:', pixmap.size(),
+            '| область виджета:', self.lbl_cover.contentsRect().size(),
+        )
+        self._display_cover()
+
+    def _display_cover(self) -> None:
+        if self._cover_pixmap.isNull():
+            return
+
+        size = self.lbl_cover.contentsRect().size()
+        if size.width() <= 0 or size.height() <= 0:
+            return
+
+        scaled = self._cover_pixmap.scaled(
+            size,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+
+        self.lbl_cover.setText('')
+        self.lbl_cover.setPixmap(scaled)
 
     # ---------- действия ----------
 
@@ -270,3 +317,14 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.login_window = Login(self.db)
         self.login_window.show()
         self.close()
+
+    def _edit_preferences(self) -> None:
+        from windows.questionnaire_window import Questionnaire
+
+        self.questionnaire_window = Questionnaire(self.db, self.user_id)
+        self.questionnaire_window.show()
+        self.close()
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self._display_cover()
