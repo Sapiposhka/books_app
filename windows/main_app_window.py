@@ -6,17 +6,17 @@ from pathlib import Path
 from PyQt6.QtCore import QEvent, Qt, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QPixmap, QShortcut
 from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QMainWindow, QPushButton
-
 from db.database import Database
 from generate_ui.main_app_ui import Ui_MainWindow
-from recommender import recommend
+from recommender import recommend, validate_answers
+from windows.mood_questionnaire_window import MoodQuestionnaire
 
 FILES_DIR = Path(__file__).resolve().parent.parent / 'files'
 
-BATCH_SIZE = 100          # сколько книг подбираем за один раз
-SWIPE_THRESHOLD = 120     # на сколько пикселей надо протянуть карточку, чтобы это засчиталось свайпом
-MAX_DESC_LENGTH = 700     # описания в датасете бывают очень длинными
-LOAD_COVERS = True        # False - не загружать обложки из интернета
+BATCH_SIZE = 100  # сколько книг подбираем за один раз
+SWIPE_THRESHOLD = 120  # на сколько пикселей надо протянуть карточку, чтобы это засчиталось свайпом
+MAX_DESC_LENGTH = 700  # описания в датасете бывают очень длинными
+LOAD_COVERS = True  # False - не загружать обложки из интернета
 
 
 class MainApp(QMainWindow, Ui_MainWindow):
@@ -28,10 +28,10 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.db = db
         self.user_id = user_id
 
-        self.queue: list[dict] = []     # книги, которые ещё покажем
+        self.queue: list[dict] = []  # книги, которые ещё покажем
         self.current_book: dict | None = None
-        self.seen: set[int] = set()     # лайкнутые и пропущенные в этой сессии
-        self.preferences = self._load_preferences()
+        self.seen: set[int] = set()  # лайкнутые и пропущенные в этой сессии
+        self.preferences, self.mood = self._load_preferences()
 
         self._drag_start_x: float | None = None
         self._card_style = self.card_frame.styleSheet()
@@ -48,6 +48,8 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.btn_skip.clicked.connect(self._skip)
         self.btn_feed.clicked.connect(self._open_feed)
         self.btn_favs.clicked.connect(self._open_favorites)
+        self.btn_mood.clicked.connect(self._open_mood_questionnaire)
+        self.btn_logout.clicked.connect(self._logout)
         # свайп мышью по карточке + стрелки на клавиатуре
         self.card_frame.installEventFilter(self)
         QShortcut(QKeySequence(Qt.Key.Key_Right), self, activated=self._like_by_key)
@@ -62,16 +64,25 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.fav_list.hide()
         self.btn_unlike.hide()
 
-    def _load_preferences(self) -> dict:
-        """Ответы из files/questionnaire_user_<id>.json; если опрос пропущен - пустой словарь."""
+    def _load_preferences(self) -> tuple[dict, str | None]:
         path = FILES_DIR / f'questionnaire_user_{self.user_id}.json'
+
         try:
             with open(path, encoding='utf-8') as file:
-                answers = json.load(file)['answers']
-            recommend([], answers)  # проверка, что ответы допустимые
-            return answers
+                data = json.load(file)
+
+            preferences = data.get('answers', {})
+            mood = data.get('mood')
+
+            if not isinstance(preferences, dict):
+                preferences = {}
+
+            validate_answers(preferences, mood)
+
+            return preferences, mood
+
         except (OSError, ValueError, KeyError, TypeError):
-            return {}
+            return {}, None
 
     # ---------- лента ----------
 
@@ -80,6 +91,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
         recommended = recommend(
             candidates,
             self.preferences,
+            mood=self.mood,
             seen=self.seen,
             limit=BATCH_SIZE,
         )
@@ -245,3 +257,16 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.db.unlike_book(self.user_id, book_id)
         self.seen.discard(book_id)
         self._refresh_favorites()
+
+    def _open_mood_questionnaire(self) -> None:
+        self.mood_window = MoodQuestionnaire(self.db, self.user_id)
+        self.mood_window.show()
+        self.close()
+
+    def _logout(self) -> None:
+        # импорт здесь, чтобы не создавать циклический импорт модулей.
+        from main_window import Login
+
+        self.login_window = Login(self.db)
+        self.login_window.show()
+        self.close()
