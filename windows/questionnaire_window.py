@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
+
 from PyQt6.QtWidgets import QMessageBox, QRadioButton, QWidget
+
 from db.database import Database
 from generate_ui.questionnaire_ui import Ui_QuestionnaireWidget
-from windows.main_app_window import MainApp
 
-
-files_path = Path('files')
+files_path = Path(__file__).resolve().parent.parent.joinpath('files')
 
 
 class Questionnaire(QWidget, Ui_QuestionnaireWidget):
@@ -15,6 +15,7 @@ class Questionnaire(QWidget, Ui_QuestionnaireWidget):
         self.setupUi(self)
         self.db = db
         self.user_id = user_id
+
         self.groups = {
             'genre': self.group_genre,
             'audience': self.group_audience,
@@ -22,6 +23,7 @@ class Questionnaire(QWidget, Ui_QuestionnaireWidget):
             'volume': self.group_volume,
             'era': self.group_era,
         }
+
         self.btn_skip.clicked.connect(self._skip)
         self.btn_done.clicked.connect(self._done)
 
@@ -32,32 +34,63 @@ class Questionnaire(QWidget, Ui_QuestionnaireWidget):
         return None
 
     def _collect_answers(self) -> dict[str, str | None]:
-        return {question: self._get_answer(question) for question in self.groups}
+        return {
+            question: self._get_answer(question)
+            for question in self.groups
+        }
 
     def _skip(self) -> None:
-        self._open_main_app()
+        self._open_mood_questionnaire()
 
     def _done(self) -> None:
         answers = self._collect_answers()
+
         if any(answer is None for answer in answers.values()):
-            QMessageBox.warning(self, 'Внимание', 'Ответьте, пожалуйста, на все вопросы или нажмите «Пропустить»')
+            QMessageBox.warning(
+                self,
+                'Внимание',
+                'Ответьте, пожалуйста, на все вопросы или нажмите «Пропустить».',
+            )
             return
 
         try:
             self._save_answers(answers)
-        except OSError as error:
-            QMessageBox.critical(self, 'Ошибка', f'Не удалось сохранить результаты опроса: {error}')
+        except (OSError, json.JSONDecodeError) as error:
+            QMessageBox.critical(
+                self,
+                'Ошибка',
+                f'Не удалось сохранить результаты опроса: {error}',
+            )
             return
-        self._open_main_app()
 
-    def _save_answers(self, answers: dict[str, str]) -> None:
-        files_path.mkdir(exist_ok=True)
-        data = {'user_id': self.user_id, 'answers': answers}
-        path = files_path / f'questionnaire_user_{self.user_id}.json'
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
+        self._open_mood_questionnaire()
 
-    def _open_main_app(self) -> None:
-        self.main_app = MainApp(self.db, self.user_id)
-        self.main_app.show()
+    def _save_answers(self, answers: dict[str, str | None]) -> None:
+        files_path.mkdir(parents=True, exist_ok=True)
+        path = files_path.joinpath(
+            f'questionnaire_user_{self.user_id}.json'
+        )
+
+        if path.exists():
+            data = json.loads(path.read_text(encoding='utf-8'))
+        else:
+            data = {
+                'user_id': self.user_id,
+                'mood': None,
+            }
+
+        data['user_id'] = self.user_id
+        data['answers'] = answers
+        data['initial_shown'] = True
+
+        path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=4),
+            encoding='utf-8',
+        )
+
+    def _open_mood_questionnaire(self) -> None:
+        from windows.mood_questionnaire_window import MoodQuestionnaire
+
+        self.mood_window = MoodQuestionnaire(self.db, self.user_id)
+        self.mood_window.show()
         self.close()
