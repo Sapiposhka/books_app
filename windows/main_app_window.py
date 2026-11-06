@@ -18,7 +18,7 @@ FILES_DIR = Path(__file__).resolve().parent.parent / 'files'
 
 BATCH_SIZE = 100  # сколько книг подбираем за один раз
 SWIPE_THRESHOLD = 120  # на сколько пикселей надо протянуть карточку, чтобы это засчиталось свайпом
-MAX_DESC_LENGTH = 700  # описания в датасете бывают очень длинными
+MAX_DESC_LENGTH = 3000  # описания в датасете бывают очень длинными (длинное прокручивается)
 LOAD_COVERS = True  # False - не загружать обложки из интернета
 
 
@@ -29,7 +29,6 @@ class MainApp(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self._cover_pixmap = QPixmap()
-        self.lbl_cover.setFixedHeight(320)
         self.lbl_cover.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.db = db
         self.user_id = user_id
@@ -59,6 +58,8 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.btn_preferences.clicked.connect(self._edit_preferences)
         # свайп мышью по карточке + стрелки на клавиатуре
         self.card_frame.installEventFilter(self)
+        # перерисовываем обложку при каждом изменении размера области под неё
+        self.lbl_cover.installEventFilter(self)
         QShortcut(QKeySequence(Qt.Key.Key_Right), self, activated=self._like_by_key)
         QShortcut(QKeySequence(Qt.Key.Key_Left), self, activated=self._skip_by_key)
 
@@ -195,10 +196,6 @@ class MainApp(QMainWindow, Ui_MainWindow):
             return
 
         self._cover_pixmap = pixmap
-        print(
-            'Исходный размер обложки:', pixmap.size(),
-            '| область виджета:', self.lbl_cover.contentsRect().size(),
-        )
         self._display_cover()
 
     def _display_cover(self) -> None:
@@ -244,6 +241,8 @@ class MainApp(QMainWindow, Ui_MainWindow):
     # ---------- свайп ----------
 
     def eventFilter(self, watched, event) -> bool:
+        if watched is self.lbl_cover and event.type() == QEvent.Type.Resize:
+            self._display_cover()
         if watched is self.card_frame:
             event_type = event.type()
             if event_type == QEvent.Type.MouseButtonPress and event.button() == Qt.MouseButton.LeftButton:
@@ -324,7 +323,3 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.questionnaire_window = Questionnaire(self.db, self.user_id)
         self.questionnaire_window.show()
         self.close()
-
-    def resizeEvent(self, event) -> None:
-        super().resizeEvent(event)
-        self._display_cover()

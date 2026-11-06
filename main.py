@@ -7,7 +7,7 @@ from main_window import Login
 
 
 def main() -> None:
-    faulthandler.enable()  # при аварийном вылете Qt выведет в консоль, где именно упало
+    faulthandler.enable()
     app = QApplication(sys.argv)
     db = Database()
     window = Login(db)

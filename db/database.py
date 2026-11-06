@@ -1,29 +1,13 @@
-import hashlib
 import hmac
 import os
 import sqlite3
-
-
-def _hash_password(password: str, salt: bytes) -> bytes:
-    return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+from utils.utils import _hash_password
 
 
 class Database:
     def __init__(self) -> None:
         self.connection = sqlite3.connect('db/books_app_db.sqlite')
         self.connection.execute('PRAGMA foreign_keys = ON')
-        self._ensure_tables()
-
-    def _ensure_tables(self) -> None:
-        """Создаёт таблицу лайков, если её ещё нет (Users и Books уже существуют)."""
-        with self.connection:
-            self.connection.execute(
-                'CREATE TABLE IF NOT EXISTS Likes ('
-                'user_id INTEGER NOT NULL REFERENCES Users(id) ON DELETE CASCADE, '
-                'book_id INTEGER NOT NULL REFERENCES Books(id) ON DELETE CASCADE, '
-                'date_of_creation TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, '
-                'PRIMARY KEY (user_id, book_id))'
-            )
 
     def register_user(self, email: str, password: str) -> bool:
         email = email.lower()
@@ -51,7 +35,6 @@ class Database:
         if hmac.compare_digest(saved_hash, _hash_password(password, salt)):
             return user_id
         return None
-
 
     _BOOK_COLUMNS = 'id, title, author, description, genres, rating, pages, pub_year, cover_url'
 
@@ -92,7 +75,6 @@ class Database:
         return self._rows_to_books(cursor)
 
     def get_books_for_recommendation(self, user_id: int) -> list[dict]:
-        """Нелайкнутые книги без тяжёлых полей (описание, обложка) - для recommend()."""
         cursor = self.connection.execute(
             'SELECT id, genres, rating, pages, pub_year FROM Books '
             'WHERE id NOT IN (SELECT book_id FROM Likes WHERE user_id = ?)',
@@ -101,7 +83,6 @@ class Database:
         return self._rows_to_books(cursor)
 
     def get_books_by_ids(self, book_ids: list[int]) -> list[dict]:
-        """Полные данные книг в том же порядке, в каком переданы id."""
         if not book_ids:
             return []
         placeholders = ', '.join('?' * len(book_ids))

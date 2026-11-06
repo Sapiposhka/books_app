@@ -1,23 +1,19 @@
 import json
 from pathlib import Path
-
 from PyQt6.QtWidgets import QMessageBox, QRadioButton, QWidget
-
 from db.database import Database
 from generate_ui.mood_questionnaire_ui import Ui_MoodQuestionnaireWidget
 
 
-FILES_DIR = Path(__file__).resolve().parent.parent / 'files'
+FILES_DIR = Path('files')
 
 
 class MoodQuestionnaire(QWidget, Ui_MoodQuestionnaireWidget):
     def __init__(self, db: Database, user_id: int):
         super().__init__()
         self.setupUi(self)
-
         self.db = db
         self.user_id = user_id
-
         self.btn_done.clicked.connect(self._finish_with_selected_mood)
         self.btn_skip.clicked.connect(self._skip_mood)
 

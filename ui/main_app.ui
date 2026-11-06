@@ -10,6 +10,12 @@
     <height>630</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>580</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Книжный рекомендатель</string>
   </property>
@@ -39,9 +45,15 @@
     </property>
     <item>
      <widget class="QFrame" name="sidebar_frame">
+      <property name="minimumSize">
+       <size>
+        <width>290</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
-        <width>230</width>
+        <width>290</width>
         <height>16777215</height>
        </size>
       </property>
@@ -52,7 +64,7 @@
          background-color: transparent;
          color: #ecf0f1;
          text-align: left;
-         padding: 12px 20px;
+         padding: 12px 16px;
          font-size: 11pt;
          border: none;
          border-radius: 6px;
@@ -78,7 +90,10 @@
           <string notr="true">color: #ffffff; font-size: 13pt; font-weight: bold; margin-left: 20px; margin-bottom: 20px;</string>
          </property>
          <property name="text">
-          <string>📖 Книжный рекомендатель</string>
+          <string>📖 Книжный&#10;рекомендатель</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -136,7 +151,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="styleSheet">
-       <string notr="true">background-color: #f7f9fc;</string>
+       <string notr="true">QStackedWidget { background-color: #f7f9fc; }</string>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -159,22 +174,42 @@
          <widget class="QFrame" name="card_frame">
           <property name="styleSheet">
            <string notr="true">
-            QFrame {
+            QFrame#card_frame {
              background-color: #ffffff;
              border: 1px solid #e1e8ed;
              border-radius: 16px;
-             padding: 24px;
             }
            </string>
           </property>
-          <layout class="QVBoxLayout" name="card_layout">
+          <layout class="QVBoxLayout" name="card_layout" stretch="3,2">
+           <property name="spacing">
+            <number>12</number>
+           </property>
+           <property name="leftMargin">
+            <number>20</number>
+           </property>
+           <property name="topMargin">
+            <number>20</number>
+           </property>
+           <property name="rightMargin">
+            <number>20</number>
+           </property>
+           <property name="bottomMargin">
+            <number>20</number>
+           </property>
            <item>
             <widget class="QLabel" name="lbl_cover">
-             <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>280</height>
-                 </size>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>120</height>
+              </size>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: #edf2f7; border-radius: 12px; font-size: 14pt; color: #718096;</string>
@@ -188,63 +223,119 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="lbl_title">
-             <property name="styleSheet">
-              <string notr="true">font-size: 18pt; font-weight: bold; color: #1a202c; margin-top: 10px;</string>
-             </property>
-             <property name="text">
-              <string>Название книги</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lbl_author">
-             <property name="styleSheet">
-              <string notr="true">font-size: 13pt; color: #4a5568;</string>
-             </property>
-             <property name="text">
-              <string>Автор</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lbl_rating">
-             <property name="styleSheet">
-              <string notr="true">font-size: 11pt; color: #d69e2e; font-weight: bold;</string>
-             </property>
-             <property name="text">
-              <string>⭐ Рейтинг: 0.0</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lbl_desc">
-             <property name="styleSheet">
-              <string notr="true">font-size: 11pt; color: #4a5568;</string>
-             </property>
-             <property name="text">
-              <string>Краткое описание книги...</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="card_spacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
+            <widget class="QScrollArea" name="scroll_info">
+             <property name="minimumSize">
               <size>
-               <width>20</width>
-               <height>40</height>
+               <width>0</width>
+               <height>100</height>
               </size>
              </property>
-            </spacer>
+             <property name="styleSheet">
+              <string notr="true">
+               QScrollArea { background: transparent; border: none; }
+               QScrollArea &gt; QWidget &gt; QWidget { background: transparent; }
+               QScrollBar:vertical { width: 8px; background: transparent; margin: 0; }
+               QScrollBar::handle:vertical { background: #cbd5e0; border-radius: 4px; min-height: 30px; }
+               QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+              </string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAsNeeded</enum>
+             </property>
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="info_container">
+              <layout class="QVBoxLayout" name="info_layout">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>10</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="lbl_title">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 12px; padding: 12px 16px; font-size: 18pt; font-weight: bold; color: #1a202c;</string>
+                 </property>
+                 <property name="text">
+                  <string>Название книги</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lbl_author">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 12px; padding: 12px 16px; font-size: 13pt; color: #4a5568;</string>
+                 </property>
+                 <property name="text">
+                  <string>Автор</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lbl_rating">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 12px; padding: 12px 16px; font-size: 11pt; color: #d69e2e; font-weight: bold;</string>
+                 </property>
+                 <property name="text">
+                  <string>⭐ Рейтинг: 0.0</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lbl_desc">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 12px; padding: 12px 16px; font-size: 11pt; color: #4a5568;</string>
+                 </property>
+                 <property name="text">
+                  <string>Краткое описание книги...</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="info_spacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -308,7 +399,7 @@
            <string notr="true">font-size: 16pt; color: #4a5568;</string>
           </property>
           <property name="text">
-           <string>Раздел «Избранное»\nЗдесь будут храниться ваши лайкнутые книги</string>
+           <string>Раздел «Избранное»&#10;Здесь будут храниться ваши лайкнутые книги</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

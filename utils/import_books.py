@@ -1,4 +1,4 @@
-"""Импорт книг из CSV (Kaggle: Books Dataset with Description, 85K Books) в db/books_app_db.sqlite.
+"""Импорт книг из CSV в db/books_app_db.sqlite.
 
 Запуск (из папки проекта):
     python import_books.py путь/к/books.csv
@@ -98,7 +98,6 @@ def parse_rating(value) -> float | None:
         rating = float(clean_text(value))
     except ValueError:
         return None
-    # рейтинг должен быть в шкале 0-5, иначе лучше оставить пустым, чем исказить данные
     return rating if 0 <= rating <= 5 else None
 
 
@@ -174,7 +173,6 @@ def prepare_books_table(connection: sqlite3.Connection, clear: bool) -> None:
     wrong_types = types.get('description') != 'TEXT' or types.get('cover_url') != 'TEXT'
 
     if wrong_types and count == 0:
-        # description REAL / cover_url INTEGER: SQLite превращал бы числоподобный текст в числа
         print('Таблица Books пустая и с неверными типами колонок - пересоздаю с правильными.')
         connection.execute('DROP TABLE Books')
         connection.execute(BOOKS_SCHEMA)
@@ -201,7 +199,7 @@ def import_csv(csv_path: Path, limit: int | None, clear: bool) -> None:
         connection = sqlite3.connect(DB_PATH)
         prepare_books_table(connection, clear)
 
-        # не добавляем уже существующие книги (повторный запуск не создаст дубликаты)
+        # не добавляем уже существующие книги
         known = {
             (title.lower(), author.lower()): (book_id, cover_url)
             for book_id, title, author, cover_url in connection.execute(
