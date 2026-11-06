@@ -78,7 +78,7 @@
           <string notr="true">color: #ffffff; font-size: 13pt; font-weight: bold; margin-left: 20px; margin-bottom: 20px;</string>
          </property>
          <property name="text">
-          <string>📖 Книжный\nрекомендатель</string>
+          <string>📖 Книжный рекомендатель</string>
          </property>
         </widget>
        </item>
@@ -103,6 +103,13 @@
          </property>
         </widget>
        </item>
+       <item>
+         <widget class="QPushButton" name="btn_preferences">
+          <property name="text">
+           <string>⚙ Сменить предпочтения</string>
+          </property>
+         </widget>
+        </item>
        <item>
         <spacer name="sidebar_spacer">
          <property name="orientation">
@@ -164,10 +171,10 @@
            <item>
             <widget class="QLabel" name="lbl_cover">
              <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>180</height>
-              </size>
+                 <size>
+                  <width>16777215</width>
+                  <height>280</height>
+                 </size>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: #edf2f7; border-radius: 12px; font-size: 14pt; color: #718096;</string>
