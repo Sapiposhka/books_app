@@ -18,7 +18,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent / 'db' / 'books_app_db.sqlite'
+DB_PATH = Path(__file__).resolve().parent.parent / 'db' / 'books_app_db.sqlite'
 
 # поле в БД -> возможные названия колонки в CSV (в нижнем регистре)
 COLUMN_ALIASES = {
