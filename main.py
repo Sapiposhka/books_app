@@ -1,4 +1,3 @@
-import faulthandler
 import sys
 from PyQt6.QtWidgets import QApplication
 from db import Database
@@ -6,7 +5,6 @@ from windows.main_window import Login
 
 
 def main() -> None:
-    faulthandler.enable()
     app = QApplication(sys.argv)
     db = Database()
     window = Login(db)

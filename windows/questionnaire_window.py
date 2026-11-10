@@ -1,11 +1,11 @@
 import json
-from pathlib import Path
 from PyQt6.QtWidgets import QMessageBox, QRadioButton, QWidget
 from db import Database
+from utils.paths import FILES_DIR
 from generate_ui.questionnaire_ui import Ui_QuestionnaireWidget
 
 
-files_path = Path('files')
+files_path = FILES_DIR
 
 
 class Questionnaire(QWidget, Ui_QuestionnaireWidget):

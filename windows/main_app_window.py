@@ -2,7 +2,6 @@ import json
 import ssl
 import threading
 import urllib.request
-from pathlib import Path
 
 import certifi
 from PyQt6.QtCore import QEvent, Qt, pyqtSignal
@@ -12,9 +11,9 @@ from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QMainWindow, QPushButt
 from db import Database
 from generate_ui.main_app_ui import Ui_MainWindow
 from recommender import recommend, validate_answers
+from utils.paths import FILES_DIR
 from windows.mood_questionnaire_window import MoodQuestionnaire
 
-FILES_DIR = Path(__file__).resolve().parent.parent / 'files'
 
 BATCH_SIZE = 100  # сколько книг подбираем за один раз
 SWIPE_THRESHOLD = 120  # на сколько пикселей надо протянуть карточку, чтобы это засчиталось свайпом
