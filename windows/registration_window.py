@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QLineEdit
 from generate_ui.registration_ui import Ui_MainWindow
-from db.database import Database
+from db import Database
 
 
 class Registration(QMainWindow, Ui_MainWindow):
@@ -27,14 +27,14 @@ class Registration(QMainWindow, Ui_MainWindow):
         elif '@' not in self.line_email.text():
             QMessageBox.warning(self, 'Ошибка', 'Некорректная почта')
         else:
-            if self.db.register_user(email, password):
+            if self.db.users.register_user(email, password):
                 QMessageBox.information(self, 'Готово', 'Регистрация прошла успешно')
                 self._back_to_login()
             else:
                 QMessageBox.warning(self, 'Ошибка', 'Такой email уже зарегистрирован')
 
     def _back_to_login(self) -> None:
-        from main_window import Login
+        from windows.main_window import Login
         self.login = Login(self.db)
         self.login.show()
         self.close()

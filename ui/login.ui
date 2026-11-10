@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Название приложения</string>
+   <string>Books app</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -45,7 +45,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Название приложения</string>
+        <string>Books app</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

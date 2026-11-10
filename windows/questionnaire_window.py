@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from PyQt6.QtWidgets import QMessageBox, QRadioButton, QWidget
-from db.database import Database
+from db import Database
 from generate_ui.questionnaire_ui import Ui_QuestionnaireWidget
 
 

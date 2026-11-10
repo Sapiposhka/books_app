@@ -1,9 +1,8 @@
 import faulthandler
 import sys
 from PyQt6.QtWidgets import QApplication
-import build_ui
-from db.database import Database
-from main_window import Login
+from db import Database
+from windows.main_window import Login
 
 
 def main() -> None:

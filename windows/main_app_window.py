@@ -9,7 +9,7 @@ from PyQt6.QtCore import QEvent, Qt, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QPixmap, QShortcut
 from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QMainWindow, QPushButton
 
-from db.database import Database
+from db import Database
 from generate_ui.main_app_ui import Ui_MainWindow
 from recommender import recommend, validate_answers
 from windows.mood_questionnaire_window import MoodQuestionnaire
@@ -101,7 +101,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
     # ---------- лента ----------
 
     def _fill_queue(self) -> None:
-        candidates = self.db.get_books_for_recommendation(self.user_id)
+        candidates = self.db.books.get_books_for_recommendation(self.user_id)
         recommended = recommend(
             candidates,
             self.preferences,
@@ -109,7 +109,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
             seen=self.seen,
             limit=BATCH_SIZE,
         )
-        self.queue = self.db.get_books_by_ids([book['id'] for book in recommended])
+        self.queue = self.db.books.get_books_by_ids([book['id'] for book in recommended])
 
     def _show_next_book(self) -> None:
         if not self.queue:
@@ -220,7 +220,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
     def _like(self) -> None:
         if self.current_book is None:
             return
-        self.db.like_book(self.user_id, self.current_book['id'])
+        self.db.books.like_book(self.user_id, self.current_book['id'])
         self.seen.add(self.current_book['id'])
         self._show_next_book()
 
@@ -283,7 +283,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
 
     def _refresh_favorites(self) -> None:
         self.fav_list.clear()
-        books = self.db.get_liked_books(self.user_id)
+        books = self.db.books.get_liked_books(self.user_id)
         for book in books:
             item = QListWidgetItem(f"{book['title']} — {book['author']}")
             item.setData(Qt.ItemDataRole.UserRole, book['id'])
@@ -300,7 +300,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
         if item is None:
             return
         book_id = item.data(Qt.ItemDataRole.UserRole)
-        self.db.unlike_book(self.user_id, book_id)
+        self.db.books.unlike_book(self.user_id, book_id)
         self.seen.discard(book_id)
         self._refresh_favorites()
 
@@ -311,7 +311,7 @@ class MainApp(QMainWindow, Ui_MainWindow):
 
     def _logout(self) -> None:
         # импорт здесь, чтобы не создавать циклический импорт модулей.
-        from main_window import Login
+        from windows.main_window import Login
 
         self.login_window = Login(self.db)
         self.login_window.show()

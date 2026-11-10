@@ -1,9 +1,7 @@
 import json
 from pathlib import Path
-
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QLineEdit
-
-from db.database import Database
+from db import Database
 from generate_ui.login_ui import Ui_MainWindow
 from windows.mood_questionnaire_window import MoodQuestionnaire
 from windows.questionnaire_window import Questionnaire
@@ -30,13 +28,13 @@ class Login(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, 'Ошибка', 'Заполните email и пароль')
             return
 
-        user_id = self.db.authenticate(email, password)
+        user_id = self.db.users.authenticate(email, password)
 
         if user_id is None:
             QMessageBox.warning(self, 'Ошибка', 'Неверный email или пароль')
             return
 
-        path = Path(__file__).resolve().parent.joinpath(
+        path = Path(__file__).resolve().parent.parent.joinpath(
             'files',
             f'questionnaire_user_{user_id}.json',
         )
